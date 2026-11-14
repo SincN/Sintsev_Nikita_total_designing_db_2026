@@ -148,6 +148,9 @@ CREATE TABLE sintsev_food.payment (
 -- у заказа может быть только одна успешная оплата (BR-8.1)
 CREATE UNIQUE INDEX ON sintsev_food.payment (order_id) WHERE status = 'успех';
 
+-- индекс для поиска всех платежей по заказу для поиска оплат по заказу
+CREATE INDEX ON sintsev_food.payment (order_id);
+
 CREATE TABLE sintsev_food.review (
     review_id        uuid NOT NULL DEFAULT exts.uuid_generate_v4(),     -- BR-11.1
     client_id        uuid NOT NULL,                                     -- BR-9.1
@@ -165,3 +168,6 @@ CREATE TABLE sintsev_food.review (
     CHECK (rating BETWEEN 1 AND 5),                                     -- BR-9.4
     CHECK (entity_type <> 'заказ' OR entity_id = order_id)              -- BR-9.2
 );
+
+-- индекс для поиска всех отзывов на блюдо или ресторан (используется при рассчете рейтинга в триггерах)
+CREATE INDEX ON sintsev_food.review (entity_type, entity_id);
